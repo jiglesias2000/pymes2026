@@ -1,0 +1,301 @@
+body {
+  background-color: rgb(241, 243, 247);
+}
+
+/* ========== Layout con sidebar a la derecha ========== */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* para que no desborde con tablas anchas */
+}
+
+.divBody {
+  background-color: white;
+  min-height: 75vh;
+  padding: 1rem;
+  flex: 1;
+}
+
+/* pie de la pagina */
+footer {
+  padding: 1rem;
+}
+
+/* ========== Sidebar ========== */
+.sidebar {
+  width: 220px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  order: -1; /* a la izquierda */
+}
+
+.sidebar-brand {
+  padding: 1rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  font-style: italic;
+  color: aquamarine;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  text-align: center;
+}
+
+.sidebar-nav {
+  list-style: none;
+  padding: 0.5rem 0;
+  margin: 0;
+  flex: 1;
+}
+.sidebar-nav li a {
+  display: block;
+  padding: 0.6rem 1.2rem;
+  color: rgba(255,255,255,0.7);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background-color 0.15s, color 0.15s;
+}
+.sidebar-nav li a i {
+  width: 1.4em;
+  text-align: center;
+  margin-right: 0.5rem;
+}
+.sidebar-nav li a:hover {
+  background-color: rgba(255,255,255,0.08);
+  color: #fff;
+}
+.sidebar-nav li a.active {
+  background-color: rgba(13,110,253,0.35);
+  color: #fff;
+  font-weight: 600;
+  border-left: 3px solid #fff;
+}
+
+.sidebar-footer {
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding: 0.8rem 1.2rem;
+}
+.sidebar-user {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+}
+.sidebar-login-btn {
+  display: block;
+  color: rgba(255,255,255,0.7);
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding: 0.4rem 0;
+}
+.sidebar-login-btn:hover {
+  color: #fff;
+}
+
+/* Botón toggle en mobile */
+.sidebar-toggle {
+  position: fixed;
+  top: 0.7rem;
+  left: 0.7rem;
+  z-index: 1051;
+  background-color: #212529;
+  color: #fff;
+  border: none;
+  border-radius: 0.4rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* Overlay mobile */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1039;
+}
+
+/* Responsive: en mobile el sidebar se oculta y aparece como panel deslizable */
+@media (max-width: 767.98px) {
+  .sidebar {
+    position: fixed;
+    left: -250px;
+    top: 0;
+    width: 250px;
+    z-index: 1040;
+    transition: left 0.25s ease;
+  }
+  .sidebar.sidebar-open {
+    left: 0;
+  }
+  .app-main {
+    width: 100%;
+  }
+}
+/* En desktop no se necesita toggle */
+@media (min-width: 768px) {
+  .sidebar-toggle {
+    display: none !important;
+  }
+}
+
+.tituloPagina {
+  font-size: 1.75rem;
+  font-weight: 500;
+  color: white;
+  text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;
+  border-bottom-style: solid;
+  border-color: gray;
+  border-bottom-width: thin;
+  padding-bottom: 0.1em;
+  margin-bottom: 0.5em;
+}
+
+
+
+/* todos los formularios */
+form {
+  background-color: rgb(241, 243, 247);
+  border-radius: 0.5rem;
+  border-style: solid;
+  border-color: lightgrey;
+  border-width: thin;
+  margin: 0em 0.5rem 1rem 0.5rem;
+  padding: 0.5rem;
+  box-shadow: 0.62rem 0.62rem 0.31rem rgb(175, 173, 173);
+}
+
+/* espacio en los botones contenidos en un div con esta clase */
+.botones button {
+  margin: 0em 0.5em 0.5em 0em;
+}
+
+/* todos los labels menos los de los radio y check */
+label:not([class^='custom-control']) {
+  background-color: #d7dfe7;
+  border-radius: 0.625em 0.2em 0rem 0.625em;
+  border-bottom: solid;
+  margin-right: -0.9em; /* para que columna label este cerca del input*/
+  padding-left: 0.5em;
+  display: block;
+  height: 90%;
+}
+
+/*<=576*/
+@media only screen and (max-width: 575px) {
+  label:not([class^='custom-control']) {
+    margin-right: 0em;
+    margin-top: 0.3rem; /* para separar grupo label/input */
+  }
+}
+
+/*>=576*/
+@media only screen and (min-width: 576px) {
+  .inputMedio {
+    width: 12em;
+  }
+  .inputChico {
+    width: 7em;
+  }
+}
+
+.pyBadge {
+  background-color: #6c757d;
+  color: white;
+  /* font-size: 1.1em; */
+  display: inline-block;
+  padding: 0.35em 0.4em;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25rem;
+}
+
+/* mensajes de validacion */
+.validacion {
+  color: red;
+  font-size: 0.8em;
+  font-style: italic;
+  padding-left: 1em;
+  padding-bottom: 0.5em;
+}
+
+/* mensajes de alerta al buscar y grabar */
+.mensajesAlert {
+  /* color: #495057; */
+  margin: 0rem 0.5rem 0rem 0.5rem;
+}
+
+.paginador {
+  background-color: #e9ecef;
+  padding: 0.5rem 1rem 0rem 1rem;
+  margin-top: -1rem; /* para pegarlo a la tabla */
+}
+
+/* todos los input a mayusculas, y no sus placeholders*/
+input {
+  text-transform: uppercase;
+  /* margin-bottom: 0.2em;  */
+  /*separa renglones*/
+}
+::placeholder {
+  text-transform: none;
+}
+
+/* encabezados de tablas */
+thead {
+  /* bootstrap thead-light*/
+  color: #495057;
+  background-color: #aeb7d7; /* #e9ecef; */
+  border-color: #dee2e6;
+}
+
+/* redes al pie de pagina */
+.redes {
+  background-color: blue;
+  color: white;
+  padding: 0.4em;
+  margin: 0.3em;
+  border-radius: 1em;
+}
+
+/* no imprimir las clases no-print */
+@media print {
+  .no-print {
+    display: none;
+  }
+}
+
+/* Override estilos globales de form dentro de cards modernizados */
+form.articulo-card {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0.5rem;
+}
+form.articulo-card label,
+.card label {
+  background-color: transparent;
+  border-radius: 0;
+  border-bottom: none;
+  margin-right: 0;
+  padding-left: 0;
+  height: auto;
+  display: inline-block;
+}
+

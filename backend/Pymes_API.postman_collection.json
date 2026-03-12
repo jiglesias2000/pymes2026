@@ -1,0 +1,979 @@
+{
+	"info": {
+		"name": "Pymes API",
+		"description": "Colección de tests para todas las APIs del backend Pymes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000"
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "refreshToken",
+			"value": ""
+		}
+	],
+	"item": [
+		{
+			"name": "Seguridad",
+			"item": [
+				{
+					"name": "Login (admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Retorna accessToken y refreshToken', () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.accessToken).to.be.a('string');",
+									"    pm.expect(json.refreshToken).to.be.a('string');",
+									"    pm.collectionVariables.set('accessToken', json.accessToken);",
+									"    pm.collectionVariables.set('refreshToken', json.refreshToken);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"usuario\": \"admin\",\n  \"clave\": \"123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "login"]
+						}
+					}
+				},
+				{
+					"name": "Login - credenciales inválidas",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200 con mensaje de error', () => {",
+									"    pm.response.to.have.status(200);",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.message).to.include('incorrecto');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"usuario\": \"admin\",\n  \"clave\": \"claveIncorrecta\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "login"]
+						}
+					}
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Retorna nuevo accessToken', () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.accessToken).to.be.a('string');",
+									"    pm.collectionVariables.set('accessToken', json.accessToken);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/refreshtoken",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "refreshtoken"]
+						}
+					}
+				},
+				{
+					"name": "Logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/logout",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "logout"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Artículos",
+			"item": [
+				{
+					"name": "GET Artículos (paginado)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Retorna Items y RegistrosTotal', () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.Items).to.be.an('array');",
+									"    pm.expect(json.RegistrosTotal).to.be.a('number');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/articulos?Pagina=1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "articulos"],
+							"query": [
+								{ "key": "Pagina", "value": "1" }
+							]
+						}
+					}
+				},
+				{
+					"name": "GET Artículos - filtro por Nombre",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Retorna Items filtrados', () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.Items).to.be.an('array');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/articulos?Pagina=1&Nombre=a",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "articulos"],
+							"query": [
+								{ "key": "Pagina", "value": "1" },
+								{ "key": "Nombre", "value": "a" }
+							]
+						}
+					}
+				},
+				{
+					"name": "GET Artículos - filtro por Activo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Todos los items son activos', () => {",
+									"    const json = pm.response.json();",
+									"    json.Items.forEach(item => pm.expect(item.Activo).to.be.true);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/articulos?Pagina=1&Activo=true",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "articulos"],
+							"query": [
+								{ "key": "Pagina", "value": "1" },
+								{ "key": "Activo", "value": "true" }
+							]
+						}
+					}
+				},
+				{
+					"name": "GET Artículo por ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Retorna artículo con campos esperados', () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.IdArticulo).to.eql(1);",
+									"    pm.expect(json.Nombre).to.be.a('string');",
+									"    pm.expect(json.Precio).to.be.a('number');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/articulos/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "articulos", "1"]
+						}
+					}
+				},
+				{
+					"name": "POST Crear Artículo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+									"pm.test('Retorna artículo creado', () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.Nombre).to.eql('Artículo Test Postman');",
+									"    pm.collectionVariables.set('articuloTestId', json.IdArticulo);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Nombre\": \"Artículo Test Postman\",\n  \"Precio\": 199.99,\n  \"CodigoDeBarra\": \"9999999999999\",\n  \"IdCategoria\": 1,\n  \"Stock\": 50,\n  \"FechaAlta\": \"2024-01-15\",\n  \"Activo\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/articulos",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "articulos"]
+						}
+					}
+				},
+				{
+					"name": "POST Crear Artículo - validación fallida",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Nombre\": \"\",\n  \"Precio\": -10\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/articulos",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "articulos"]
+						}
+					}
+				},
+				{
+					"name": "PUT Actualizar Artículo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 204 No Content', () => pm.response.to.have.status(204));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Nombre\": \"Artículo Actualizado\",\n  \"Precio\": 299.99,\n  \"CodigoDeBarra\": \"9999999999999\",\n  \"IdCategoria\": 1,\n  \"Stock\": 100,\n  \"FechaAlta\": \"2024-01-15\",\n  \"Activo\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/articulos/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "articulos", "1"]
+						}
+					}
+				},
+				{
+					"name": "DELETE Artículo (logical toggle)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{baseUrl}}/api/articulos/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "articulos", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Categorías",
+			"item": [
+				{
+					"name": "GET Categorías",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Retorna array de categorías', () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json).to.be.an('array');",
+									"    pm.expect(json.length).to.be.greaterThan(0);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/categorias",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "categorias"]
+						}
+					}
+				},
+				{
+					"name": "GET Categoría por ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Retorna categoría', () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.IdCategoria).to.eql(1);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/categorias/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "categorias", "1"]
+						}
+					}
+				},
+				{
+					"name": "GET Categoría inexistente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 404', () => pm.response.to.have.status(404));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/categorias/9999",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "categorias", "9999"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Categorías Mock",
+			"item": [
+				{
+					"name": "GET Categorías Mock",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Retorna array de 10 categorías mock', () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json).to.be.an('array');",
+									"    pm.expect(json.length).to.eql(10);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/categoriasmock",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "categoriasmock"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Usuarios",
+			"item": [
+				{
+					"name": "GET Usuarios (con token admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Retorna array de usuarios', () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json).to.be.an('array');",
+									"    pm.expect(json.length).to.be.greaterThan(0);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/usuarios",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "usuarios"]
+						}
+					}
+				},
+				{
+					"name": "GET Usuarios - sin token (401)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 401 Unauthorized', () => pm.response.to.have.status(401));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/usuarios",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "usuarios"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Clientes",
+			"item": [
+				{
+					"name": "GET Clientes (paginado)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Retorna Items y RegistrosTotal', () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.Items).to.be.an('array');",
+									"    pm.expect(json.RegistrosTotal).to.be.a('number');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/clientes?Pagina=1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "clientes"],
+							"query": [
+								{ "key": "Pagina", "value": "1" }
+							]
+						}
+					}
+				},
+				{
+					"name": "GET Clientes - filtro por Nombre",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Retorna Items filtrados', () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.Items).to.be.an('array');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/clientes?Pagina=1&Nombre=a",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "clientes"],
+							"query": [
+								{ "key": "Pagina", "value": "1" },
+								{ "key": "Nombre", "value": "a" }
+							]
+						}
+					}
+				},
+				{
+					"name": "GET Clientes - filtro por Activo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Todos activos', () => {",
+									"    const json = pm.response.json();",
+									"    json.Items.forEach(item => pm.expect(item.Activo).to.be.true);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/clientes?Pagina=1&Activo=true",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "clientes"],
+							"query": [
+								{ "key": "Pagina", "value": "1" },
+								{ "key": "Activo", "value": "true" }
+							]
+						}
+					}
+				},
+				{
+					"name": "GET Cliente por ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Retorna cliente con campos esperados', () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.IdCliente).to.eql(1);",
+									"    pm.expect(json.Nombre).to.be.a('string');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/clientes/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "clientes", "1"]
+						}
+					}
+				},
+				{
+					"name": "GET Clientes Typeahead",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Retorna array con max 10 resultados', () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json).to.be.an('array');",
+									"    pm.expect(json.length).to.be.at.most(10);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/clientes/typeahead?Nombre=a",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "clientes", "typeahead"],
+							"query": [
+								{ "key": "Nombre", "value": "a" }
+							]
+						}
+					}
+				},
+				{
+					"name": "POST Crear Cliente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+									"pm.test('Retorna cliente creado', () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.Nombre).to.eql('Cliente Test Postman');",
+									"    pm.collectionVariables.set('clienteTestId', json.IdCliente);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Nombre\": \"Cliente Test Postman\",\n  \"Cuit\": \"20-12345678-9\",\n  \"Mail\": \"test@postman.com\",\n  \"CreditoMaximo\": 10000,\n  \"FechaNacimiento\": \"1990-05-15\",\n  \"FechaIngreso\": \"2024-01-01\",\n  \"Localidad\": \"Buenos Aires\",\n  \"Calle\": \"Av. Corrientes\",\n  \"NumeroCalle\": 1234,\n  \"Activo\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/clientes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "clientes"]
+						}
+					}
+				},
+				{
+					"name": "POST Crear Cliente - validación fallida",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Nombre\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/clientes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "clientes"]
+						}
+					}
+				},
+				{
+					"name": "PUT Actualizar Cliente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 204 No Content', () => pm.response.to.have.status(204));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Nombre\": \"Cliente Actualizado\",\n  \"Cuit\": \"20-12345678-9\",\n  \"Mail\": \"actualizado@postman.com\",\n  \"CreditoMaximo\": 20000,\n  \"FechaNacimiento\": \"1990-05-15\",\n  \"FechaIngreso\": \"2024-01-01\",\n  \"Localidad\": \"Córdoba\",\n  \"Calle\": \"Av. Colón\",\n  \"NumeroCalle\": 567,\n  \"Activo\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/clientes/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "clientes", "1"]
+						}
+					}
+				},
+				{
+					"name": "DELETE Cliente (logical toggle)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{baseUrl}}/api/clientes/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "clientes", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Ventas",
+			"item": [
+				{
+					"name": "GET Ventas",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Retorna array de ventas', () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json).to.be.an('array');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/ventas",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "ventas"]
+						}
+					}
+				},
+				{
+					"name": "GET Ventas - filtro por IdCliente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Retorna array', () => {",
+									"    pm.expect(pm.response.json()).to.be.an('array');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/ventas?IdCliente=1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "ventas"],
+							"query": [
+								{ "key": "IdCliente", "value": "1" }
+							]
+						}
+					}
+				},
+				{
+					"name": "GET Ventas - filtro por fechas",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Retorna array', () => {",
+									"    pm.expect(pm.response.json()).to.be.an('array');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/ventas?FechaDesde=2024-01-01&FechaHasta=2026-12-31",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "ventas"],
+							"query": [
+								{ "key": "FechaDesde", "value": "2024-01-01" },
+								{ "key": "FechaHasta", "value": "2026-12-31" }
+							]
+						}
+					}
+				},
+				{
+					"name": "POST Crear Venta",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+									"pm.test('Retorna IdVenta', () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.IdVenta).to.be.a('number');",
+									"    pm.collectionVariables.set('ventaTestId', json.IdVenta);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Venta\": {\n    \"IdCliente\": 1,\n    \"Fecha\": \"2024-06-15\",\n    \"Total\": 599.98\n  },\n  \"VentasDetalle\": [\n    {\n      \"IdArticulo\": 1,\n      \"Cantidad\": 2,\n      \"Precio\": 199.99\n    },\n    {\n      \"IdArticulo\": 2,\n      \"Cantidad\": 1,\n      \"Precio\": 200.00\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/ventas",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "ventas"]
+						}
+					}
+				},
+				{
+					"name": "POST Crear Venta - validación fallida",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Venta\": {},\n  \"VentasDetalle\": []\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/ventas",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "ventas"]
+						}
+					}
+				},
+				{
+					"name": "GET Venta Detalles",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Retorna array de detalles', () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json).to.be.an('array');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/ventasdetalles/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "ventasdetalles", "1"]
+						}
+					}
+				}
+			]
+		}
+	]
+}
