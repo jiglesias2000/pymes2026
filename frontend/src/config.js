@@ -5,8 +5,8 @@
 // opcion 2 cuando se despliega el frontend en un servidor distinto al backend
 //const urlServidor = "https://labsys.frc.utn.edu.ar/dds-backend-2025"
 //const urlServidor = "https://pymes2025.azurewebsites.net"
-//const urlServidor = "https://webapi.pymes.net.ar"
-const urlServidor = "http://localhost:3000"    //ojo sin https:// solo http://  (sin la "s" de seguridad)
+const urlServidor = "https://pymes2026-backend.vercel.app"
+//const urlServidor = "http://localhost:3000"    //ojo sin https:// solo http://  (sin la "s" de seguridad)
 
 
 // opcion 3 cuando se despliega el frontend, en el mismo servidor que el backend
