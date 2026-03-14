@@ -1,3 +1,5 @@
+// vercel lee las variables de entorno automáticamente, pero localmente se deben cargar con dotenv??
+
 require("dotenv").config(); // cargar variables de entorno desde .env
 
 const express = require("express");
