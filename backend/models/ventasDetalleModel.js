@@ -52,6 +52,10 @@ const ventasdetalle = sequelize.define(
           msg: "Precio es requerido",
         },
       },
+      get() {
+        const value = this.getDataValue("Precio");
+        return value === null ? null : parseFloat(value);
+      },
     },
   }
 );

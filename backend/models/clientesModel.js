@@ -60,6 +60,10 @@ const clientes = sequelize.define(
           msg: "CreditoMaximo es requerido",
         },
       },
+      get() {
+        const value = this.getDataValue("CreditoMaximo");
+        return value === null ? null : parseFloat(value);
+      },
     },
     FechaNacimiento: {
       type: DataTypes.STRING,

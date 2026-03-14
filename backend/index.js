@@ -63,11 +63,15 @@ app.use(errorHandler);
 const port = 3000;
 app.locals.fechaInicio = new Date();  // fecha y hora inicio de aplicacion
 
-if (require.main === module) {   // si no es llamado por otro módulo, es decir, si es el módulo principal -> levantamos el servidor
+if (require.main === module) {
+  // Ejecución local: inicializar base y levantar servidor
   inicializarBase().then(() => {
     app.listen(port, () => {
       console.log(`sitio escuchando en el puerto ${port}`);
     });
   });
+} else if (process.env.VERCEL) {
+  // En Vercel: inicializar base (serverless, no hace listen)
+  inicializarBase();
 }
-module.exports = app; // para testing
+module.exports = app; // para testing y Vercel

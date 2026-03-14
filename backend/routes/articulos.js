@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 const articulos = require('../models/articulosModel');
-const { Op, ValidationError } = require("sequelize");
+const { ValidationError } = require("sequelize");
+const { OpLike } = require('../models/configurarSequelize');
 
 
 router.get("/api/articulos", async function (req, res, next) {
@@ -13,7 +14,7 @@ router.get("/api/articulos", async function (req, res, next) {
     let where = {};
     if (req.query.Nombre != undefined && req.query.Nombre !== "") {
       where.Nombre = {
-        [Op.like]: "%" + req.query.Nombre + "%",
+        [OpLike]: "%" + req.query.Nombre + "%",
       };
     }
     if (req.query.Activo != undefined && req.query.Activo !== "") {
@@ -82,7 +83,7 @@ router.post("/api/articulos/", async (req, res, next) => {
       FechaAlta: req.body.FechaAlta,
       Activo: req.body.Activo,
     });
-    res.status(201).json(item.dataValues); // devolvemos el registro agregado!
+    res.status(201).json(item.toJSON()); // devolvemos el registro agregado!
   } catch (err) {
     if (err instanceof ValidationError) {
       // si son errores de validación, los devolvemos
@@ -177,12 +178,13 @@ router.delete("/api/articulos/:id", async (req, res, next) => {
   } else {
     // baja lógica, si esta activo lo desactiva y viceversa
     try {
-      let data = await articulos.sequelize.query(
-        "UPDATE articulos SET Activo = case when Activo = 1 then 0 else 1 end WHERE IdArticulo = :IdArticulo",
-        {
-          replacements: { IdArticulo: +req.params.id },
-        }
-      );
+      let articulo = await articulos.findByPk(req.params.id);
+      if (!articulo) {
+        res.sendStatus(404);
+        return;
+      }
+      articulo.Activo = !articulo.Activo;
+      await articulo.save();
       res.sendStatus(200);
     } catch (err) {
       if (err instanceof ValidationError) {

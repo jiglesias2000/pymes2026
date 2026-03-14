@@ -38,6 +38,10 @@ const ventascabecera = sequelize.define(
           msg: "Total es requerido",
         },
       },
+      get() {
+        const value = this.getDataValue("Total");
+        return value === null ? null : parseFloat(value);
+      },
     },
   }
 );

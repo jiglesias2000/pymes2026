@@ -36,7 +36,11 @@ const articulos = sequelize.define(
           args: true,
           msg: "Precio es requerido",
         }
-      }
+      },
+      get() {
+        const value = this.getDataValue("Precio");
+        return value === null ? null : parseFloat(value);
+      },
     },
     CodigoDeBarra: {
       type: DataTypes.STRING(13),

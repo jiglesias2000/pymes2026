@@ -14,14 +14,23 @@ if (require.main === module) {
  async function inicializarBase() {
   try {
 
-   // verfica si el archivo de base de datos existe
-    const fs = require('fs');
-    const path = require('path');
-    const archivo = path.join(__dirname, '.././data/pymes.db');
-    if (fs.existsSync(archivo)) {
-      return;   // si existe lo deja tal cual
+    if (process.env.DB_DIALECT === 'postgres') {
+      // Para PostgreSQL, verificar si las tablas ya tienen datos
+      try {
+        const count = await categorias.count();
+        if (count > 0) return; // ya inicializada
+      } catch (e) {
+        // tabla no existe, continuar con inicialización
+      }
+    } else {
+      // Para SQLite, verificar si el archivo existe
+      const fs = require('fs');
+      const path = require('path');
+      const archivo = path.join(__dirname, '.././data/pymes.db');
+      if (fs.existsSync(archivo)) {
+        return;   // si existe lo deja tal cual
+      }
     }
-    // si no existe, crea la base de datos
 
     // Sincroniza los modelos con la base de datos
     await sequelize.sync({ force: true }); // `force: true` elimina las tablas existentes y las vuelve a crear (¡cuidado en producción!)

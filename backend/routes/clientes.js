@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const clientes = require('../models/clientesModel');
-const { Op, ValidationError } = require("sequelize");
+const { ValidationError } = require("sequelize");
+const { OpLike } = require('../models/configurarSequelize');
 
 
 // Typeahead (sin bloqueo de pantalla)
@@ -10,7 +11,7 @@ router.get("/api/clientes/typeahead", async function (req, res, next) {
     let where = {};
     if (req.query.Nombre != undefined && req.query.Nombre !== "") {
       where.Nombre = {
-        [Op.like]: "%" + req.query.Nombre + "%",
+        [OpLike]: "%" + req.query.Nombre + "%",
       };
     }
     const data = await clientes.findAll({
@@ -32,7 +33,7 @@ router.get("/api/clientes", async function (req, res, next) {
     let where = {};
     if (req.query.Nombre != undefined && req.query.Nombre !== "") {
       where.Nombre = {
-        [Op.like]: "%" + req.query.Nombre + "%",
+        [OpLike]: "%" + req.query.Nombre + "%",
       };
     }
     if (req.query.Activo != undefined && req.query.Activo !== "") {
@@ -105,7 +106,7 @@ router.post("/api/clientes/", async (req, res, next) => {
       NumeroCalle: req.body.NumeroCalle,
       Activo: req.body.Activo,
     });
-    res.status(201).json(item.dataValues);
+    res.status(201).json(item.toJSON());
   } catch (err) {
     if (err instanceof ValidationError) {
       let messages = '';
@@ -154,12 +155,13 @@ router.put("/api/clientes/:id", async (req, res, next) => {
 // Baja lógica (toggle Activo)
 router.delete("/api/clientes/:id", async (req, res, next) => {
   try {
-    let data = await clientes.sequelize.query(
-      "UPDATE clientes SET Activo = case when Activo = 1 then 0 else 1 end WHERE IdCliente = :IdCliente",
-      {
-        replacements: { IdCliente: +req.params.id },
-      }
-    );
+    let cliente = await clientes.findByPk(req.params.id);
+    if (!cliente) {
+      res.sendStatus(404);
+      return;
+    }
+    cliente.Activo = !cliente.Activo;
+    await cliente.save();
     res.sendStatus(200);
   } catch (err) {
     if (err instanceof ValidationError) {

@@ -1,16 +1,32 @@
-const { Sequelize } = require('sequelize');
+require('dotenv').config();
+const { Sequelize, Op } = require('sequelize');
 
-// Configuración de la base de datos SQLite
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: './.data/pymes.db', // Nombre del archivo de la base de datos
-  define: {
-    // Opciones globales de los modelos
-    freezeTableName: true,  // no pluraliza los nombres de las tablas, modelo = tabla
-    timestamps: false,  // no crea campos de fecha de creación y modificación
+let sequelize;
 
+if (process.env.DB_DIALECT === 'postgres') {
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: { rejectUnauthorized: false },
+    },
+    define: {
+      freezeTableName: true,
+      timestamps: false,
+    },
+  });
+} else {
+  sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: './.data/pymes.db',
+    define: {
+      freezeTableName: true,
+      timestamps: false,
+    },
+  });
+}
 
-  },
-});
+// Helper: Op.iLike para PostgreSQL (case-insensitive), Op.like para SQLite (ya es case-insensitive)
+const OpLike = process.env.DB_DIALECT === 'postgres' ? Op.iLike : Op.like;
 
 module.exports = sequelize;
+module.exports.OpLike = OpLike;
