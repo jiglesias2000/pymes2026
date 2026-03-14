@@ -1,5 +1,7 @@
 require('dotenv').config();
 const { Sequelize, Op } = require('sequelize');
+// Importar pg a nivel módulo para que el bundler de Vercel lo incluya
+try { require('pg'); } catch (e) { /* pg no necesario para SQLite */ }
 
 let sequelize;
 
