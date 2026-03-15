@@ -72,8 +72,8 @@ if (require.main === module) {
       console.log(`sitio escuchando en el puerto ${port}`);
     });
   });
-} else if (process.env.VERCEL) {
-  // En Vercel: inicializar base (serverless, no hace listen)
-  inicializarBase();
 }
+// En Vercel (serverless) NO se ejecuta inicializarBase() en cada cold start.
+// Las tablas en PostgreSQL/Supabase ya deben estar creadas.
+// Para inicializar la base en producción, ejecutar manualmente: node models/inicializarBase.js
 module.exports = app; // para testing y Vercel

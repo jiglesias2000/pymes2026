@@ -33,7 +33,9 @@ if (require.main === module) {
     }
 
     // Sincroniza los modelos con la base de datos
-    await sequelize.sync({ force: true }); // `force: true` elimina las tablas existentes y las vuelve a crear (¡cuidado en producción!)
+    // force: true solo para SQLite (desarrollo), alter: true para PostgreSQL (producción)
+    const syncOption = process.env.DB_DIALECT === 'postgres' ? { alter: true } : { force: true };
+    await sequelize.sync(syncOption);
 
     // Crea datos de prueba
     await DatosCategorias();
